@@ -1,0 +1,405 @@
+{
+  "info": {
+    "_postman_id": "fit4110-notification-contract-tests",
+    "name": "FIT4110 Lab 05 - Notification Compose Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('GET /health -> 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('service is notification', function () { const body = pm.response.json(); pm.expect(body.service).to.eql('notification'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Create notification happy path",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "text"
+          },
+          {
+            "key": "X-Trace-Id",
+            "value": "trace-lab-notify-001",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "notifications"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"alert_id\": \"ALERT-20260617-0001\",\n  \"target\": {\n    \"kind\": \"user\",\n    \"user_id\": \"staff-security-01\"\n  },\n  \"channels\": [\n    \"push\",\n    \"sms\",\n    \"email\"\n  ],\n  \"priority\": \"critical\",\n  \"title\": \"Motion detected after hours\",\n  \"message\": \"Camera CAM-A01 detected motion in Library Zone B.\",\n  \"dedupe_key\": \"motion:CAM-A01:20260617T210000\",\n  \"template_code\": \"security_motion_v1\",\n  \"metadata\": {\n    \"building\": \"Library\",\n    \"camera_id\": \"CAM-A01\",\n    \"policy_id\": \"POLICY-AFTER-HOURS\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('accepted or duplicate', function () { pm.expect([200, 202]).to.include(pm.response.code); });",
+              "const body = pm.response.json();",
+              "pm.test('has notification_id', function () { pm.expect(body.notification_id).to.be.a('string'); });",
+              "if (body.notification_id) { pm.environment.set('notificationId', body.notification_id); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Create duplicate notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "text"
+          },
+          {
+            "key": "X-Trace-Id",
+            "value": "trace-lab-notify-001",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "notifications"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"alert_id\": \"ALERT-20260617-0001\",\n  \"target\": {\n    \"kind\": \"user\",\n    \"user_id\": \"staff-security-01\"\n  },\n  \"channels\": [\n    \"push\",\n    \"sms\",\n    \"email\"\n  ],\n  \"priority\": \"critical\",\n  \"title\": \"Motion detected after hours\",\n  \"message\": \"Camera CAM-A01 detected motion in Library Zone B.\",\n  \"dedupe_key\": \"motion:CAM-A01:20260617T210000\",\n  \"template_code\": \"security_motion_v1\",\n  \"metadata\": {\n    \"building\": \"Library\",\n    \"camera_id\": \"CAM-A01\",\n    \"policy_id\": \"POLICY-AFTER-HOURS\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('duplicate accepted safely', function () { pm.expect([200, 202]).to.include(pm.response.code); });",
+              "const body = pm.response.json();",
+              "pm.test('dedupe_key is returned', function () { pm.expect(body.dedupe_key).to.eql('motion:CAM-A01:20260617T210000'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - List notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications?limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "notifications?limit=10"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('list -> 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('items array exists', function () { pm.expect(pm.response.json().items).to.be.an('array'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Get notification detail",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/{{notificationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "notifications",
+            "{{notificationId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('detail -> 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('attempts array exists', function () { pm.expect(pm.response.json().attempts).to.be.an('array'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Retry notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications/{{notificationId}}/retry",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "notifications",
+            "{{notificationId}}",
+            "retry"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('retry accepted or conflict', function () { pm.expect([202, 409]).to.include(pm.response.code); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Get template",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/templates/security_motion_v1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "templates",
+            "security_motion_v1"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('template -> 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('template_code returned', function () { pm.expect(pm.response.json().template_code).to.eql('security_motion_v1'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Missing auth should be rejected",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "notifications"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"alert_id\": \"ALERT-20260617-0001\",\n  \"target\": {\n    \"kind\": \"user\",\n    \"user_id\": \"staff-security-01\"\n  },\n  \"channels\": [\n    \"push\",\n    \"sms\",\n    \"email\"\n  ],\n  \"priority\": \"critical\",\n  \"title\": \"Motion detected after hours\",\n  \"message\": \"Camera CAM-A01 detected motion in Library Zone B.\",\n  \"dedupe_key\": \"motion:CAM-A01:20260617T210000\",\n  \"template_code\": \"security_motion_v1\",\n  \"metadata\": {\n    \"building\": \"Library\",\n    \"camera_id\": \"CAM-A01\",\n    \"policy_id\": \"POLICY-AFTER-HOURS\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('missing auth -> 401', function () { pm.response.to.have.status(401); });",
+              "pm.test('problem details body', function () { const body = pm.response.json(); pm.expect(body.status).to.eql(401); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Invalid payload should fail validation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/notifications",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "notifications"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"alert_id\": \"ALERT-20260617-0002\",\n  \"target\": {\n    \"kind\": \"user\",\n    \"user_id\": \"staff-security-01\"\n  },\n  \"channels\": [],\n  \"priority\": \"urgent\",\n  \"title\": \"Bad payload\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('invalid payload -> 422', function () { pm.response.to.have.status(422); });",
+              "pm.test('problem details body', function () { const body = pm.response.json(); pm.expect(body.status).to.eql(422); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Consumer-side Core alert mock",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/core-alerts/ALERT-20260617-0001",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "core-alerts",
+            "ALERT-20260617-0001"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('core alert mock -> 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('alert id exists', function () { pm.expect(pm.response.json().alert_id).to.include('ALERT-'); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
