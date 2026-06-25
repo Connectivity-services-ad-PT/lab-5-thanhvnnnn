@@ -1,14 +1,15 @@
 # Readiness Checklist - Lab 05 Notification
 
-- [x] API container chạy bằng Docker Compose.
-- [x] Database PostgreSQL có healthcheck `pg_isready`.
-- [x] Sender worker có `/health` ở port 9000.
-- [x] API có `/health` ở port 8000.
-- [x] API phụ thuộc DB và worker bằng `depends_on: condition: service_healthy`.
-- [x] Có `.env.example`, không commit secret thật.
-- [x] Có network `team-internal` cho giao tiếp nội bộ.
-- [x] Có network `class-net` để sẵn sàng nối nhóm khác.
-- [x] Có Postman/Newman collection cho test compose.
-- [x] Có hướng dẫn chạy trong `RUN_COMPOSE.md`.
-- [ ] Đã chạy `docker compose ps` và lưu screenshot thật.
-- [ ] Đã test partner gọi `/health` qua IP lớp.
+- [x] API container runs with Docker Compose.
+- [x] PostgreSQL database has `pg_isready` healthcheck.
+- [x] Sender worker exposes `/health` on port `9000`.
+- [x] API exposes `/health` on container port `8000`.
+- [x] API depends on DB and worker with `depends_on: condition: service_healthy`.
+- [x] `.env.example` exists and does not contain real secrets.
+- [x] `team-internal` network exists for internal service traffic.
+- [x] `class-net` network exists for partner-group testing.
+- [x] Postman/Newman collection exists for Compose testing.
+- [x] `RUN_COMPOSE.md` explains how to run the stack.
+- [x] Real `docker compose ps`, health and logs evidence saved in `reports/lab05-compose-evidence.md`.
+- [x] Newman XML/HTML reports generated in `reports/`.
+- [ ] Partner group has called `/health` through the real class network IP.

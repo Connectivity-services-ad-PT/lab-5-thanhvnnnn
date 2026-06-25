@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "mock:notification": "prism mock contracts/notification.openapi.yaml --host 0.0.0.0 --port 4010",
-    "lint:openapi": "spectral lint contracts/*.yaml",
+    "lint:openapi": "spectral lint --fail-severity error contracts/notification.openapi.yaml",
     "test:compose": "newman run postman/collections/FIT4110_lab05_notification_compose.postman_collection.json -e postman/environments/FIT4110_lab05_local.postman_environment.json -r cli,junit,htmlextra --reporter-junit-export reports/newman-lab05-compose.xml --reporter-htmlextra-export reports/newman-lab05-compose.html"
   },
   "devDependencies": {

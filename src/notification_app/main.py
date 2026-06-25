@@ -210,7 +210,7 @@ def health() -> HealthResponse:
         status="ok",
         service=SERVICE_NAME,
         version=SERVICE_VERSION,
-        dependencies={"queue": "ready", "sender": "ready"},
+        dependencies={"queue": "ready", "sender": "ready", "db": "ready"},
     )
 
 

@@ -19,10 +19,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Create .env from example
         run: cp .env.example .env
@@ -72,9 +73,9 @@ jobs:
           CHECKLIST="checklists/readiness-checklist.md"
           TOTAL=$(grep -cE '^[[:space:]]*-[[:space:]]*\[[ xX]\]' "$CHECKLIST" || true)
           CHECKED=$(grep -cE '^[[:space:]]*-[[:space:]]*\[[xX]\]' "$CHECKLIST" || true)
-          echo "Readiness checklist: ${CHECKED:-0}/${TOTAL:-0} mục đã tick"
+          echo "Readiness checklist: ${CHECKED:-0}/${TOTAL:-0} items checked"
           if [ "${CHECKED:-0}" -lt 6 ]; then
-            echo "::error::Lab yêu cầu tối thiểu 6 mục readiness"
+            echo "::error::Lab requires at least 6 readiness items"
             exit 1
           fi
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="FIT4110 Lab 05 - Notification Compose Tests" tests="10" time="0.090">
+  <testsuite name="01 - Health check" id="ee0c1073-ca09-41b7-9ee0-8b92d339968b" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.038">
+    <testcase name="GET /health -> 200" time="0.038" classname="01HealthCheck"/>
+    <testcase name="service is notification" time="0.038" classname="01HealthCheck"/>
+  </testsuite>
+  <testsuite name="02 - Create notification happy path" id="54cea86d-e636-4bd7-ab5a-e2512c09e897" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.012">
+    <testcase name="accepted or duplicate" time="0.012" classname="02CreateNotificationHappyPath"/>
+    <testcase name="has notification_id" time="0.012" classname="02CreateNotificationHappyPath"/>
+  </testsuite>
+  <testsuite name="03 - Create duplicate notification" id="ae4dca02-3d6b-448f-a43a-5f1d7a63aa68" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="duplicate accepted safely" time="0.005" classname="03CreateDuplicateNotification"/>
+    <testcase name="dedupe_key is returned" time="0.005" classname="03CreateDuplicateNotification"/>
+  </testsuite>
+  <testsuite name="04 - List notifications" id="2c135972-48c4-4fe1-9ff5-b49400446331" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="list -> 200" time="0.005" classname="04ListNotifications"/>
+    <testcase name="items array exists" time="0.005" classname="04ListNotifications"/>
+  </testsuite>
+  <testsuite name="05 - Get notification detail" id="12fa243b-3e37-4715-896a-26f3caddaf66" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="detail -> 200" time="0.005" classname="05GetNotificationDetail"/>
+    <testcase name="attempts array exists" time="0.005" classname="05GetNotificationDetail"/>
+  </testsuite>
+  <testsuite name="06 - Retry notification" id="01faf325-60af-4303-a302-37b243e44d4b" timestamp="2026-06-25T04:02:22.321Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="retry accepted or conflict" time="0.005" classname="06RetryNotification"/>
+  </testsuite>
+  <testsuite name="07 - Get template" id="c8f998e3-f5ce-435e-b71b-69c2a3cf70df" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="template -> 200" time="0.005" classname="07GetTemplate"/>
+    <testcase name="template_code returned" time="0.005" classname="07GetTemplate"/>
+  </testsuite>
+  <testsuite name="08 - Missing auth should be rejected" id="7c72ab96-ec95-4813-9f3a-5a4d8cd2abba" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="missing auth -> 401" time="0.005" classname="08MissingAuthShouldBeRejected"/>
+    <testcase name="problem details body" time="0.005" classname="08MissingAuthShouldBeRejected"/>
+  </testsuite>
+  <testsuite name="09 - Invalid payload should fail validation" id="12bab764-2c9d-4b98-8aa8-e442dec7b005" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="invalid payload -> 422" time="0.005" classname="09InvalidPayloadShouldFailValidation"/>
+    <testcase name="problem details body" time="0.005" classname="09InvalidPayloadShouldFailValidation"/>
+  </testsuite>
+  <testsuite name="10 - Consumer-side Core alert mock" id="3ba3fe87-b3e9-4084-aead-c0c0b3f2d546" timestamp="2026-06-25T04:02:22.321Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="core alert mock -> 200" time="0.005" classname="10ConsumerSideCoreAlertMock"/>
+    <testcase name="alert id exists" time="0.005" classname="10ConsumerSideCoreAlertMock"/>
+  </testsuite>
+</testsuites>

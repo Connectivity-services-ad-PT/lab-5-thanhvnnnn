@@ -159,7 +159,13 @@
             "{{baseUrl}}"
           ],
           "path": [
-            "notifications?limit=10"
+            "notifications"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
           ]
         }
       },

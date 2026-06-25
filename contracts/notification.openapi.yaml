@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Smart Campus Notification Service API
   version: 1.0.0
@@ -45,6 +45,7 @@ paths:
                     dependencies:
                       queue: ready
                       sender: ready
+                      db: ready
   /notifications:
     post:
       tags: [notifications]
@@ -129,7 +130,8 @@ paths:
           name: recipient_id
           required: false
           schema:
-            type: [string, "null"]
+            type: string
+            nullable: true
             minLength: 3
           example: staff-security-01
         - in: query
@@ -197,8 +199,8 @@ paths:
                       - channel: push
                         status: queued
                         attempted_at: "2026-06-17T21:00:02+07:00"
-                        provider_message_id: null
-                        error: null
+                        provider_message_id: mock-push-NTF-20260617-0001
+                        error: none
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -307,7 +309,8 @@ components:
       name: X-Trace-Id
       required: false
       schema:
-        type: [string, "null"]
+        type: string
+        nullable: true
         maxLength: 80
       example: trace-lab03-001
     NotificationId:
@@ -499,12 +502,14 @@ components:
           maxLength: 1000
           example: Camera CAM-A01 detected motion in Library Zone B.
         dedupe_key:
-          type: [string, "null"]
+          type: string
+          nullable: true
           minLength: 8
           maxLength: 160
           example: motion:CAM-A01:20260617T210000
         template_code:
-          type: [string, "null"]
+          type: string
+          nullable: true
           pattern: "^[a-z0-9_\\-]{3,60}$"
           example: security_motion_v1
         metadata:
@@ -530,14 +535,16 @@ components:
           items:
             $ref: "#/components/schemas/NotificationChannel"
         dedupe_key:
-          type: [string, "null"]
+          type: string
+          nullable: true
           example: motion:CAM-A01:20260617T210000
         queued_at:
           type: string
           format: date-time
           example: "2026-06-17T21:00:02+07:00"
         trace_id:
-          type: [string, "null"]
+          type: string
+          nullable: true
           example: trace-lab03-001
     NotificationSummary:
       type: object
@@ -556,7 +563,8 @@ components:
         priority:
           $ref: "#/components/schemas/NotificationPriority"
         recipient_id:
-          type: [string, "null"]
+          type: string
+          nullable: true
         created_at:
           type: string
           format: date-time
@@ -580,9 +588,11 @@ components:
           type: string
           format: date-time
         provider_message_id:
-          type: [string, "null"]
+          type: string
+          nullable: true
         error:
-          type: [string, "null"]
+          type: string
+          nullable: true
     NotificationDetail:
       allOf:
         - $ref: "#/components/schemas/NotificationSummary"
@@ -684,4 +694,5 @@ components:
         detail:
           type: string
         instance:
-          type: [string, "null"]
+          type: string
+          nullable: true
